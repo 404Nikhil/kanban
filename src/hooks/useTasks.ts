@@ -1,3 +1,5 @@
+'use client'
+
 import { useState, useEffect } from 'react';
 import { Task, TaskStatus } from '@/types';
 import { fetchTasks, createTask, updateTask, deleteTask } from '@/lib/api';
@@ -51,5 +53,12 @@ export function useTasks() {
     }
   }
 
-  return { tasks, loading, error, addTask, updateTaskStatus, removeTask };
+  return {
+    tasks,
+    loading,
+    error,
+    addTask: (task: Omit<Task, 'id'>) => Promise<void>,
+    updateTaskStatus: (id: string, newStatus: TaskStatus) => Promise<void>,
+    removeTask: (id: string) => Promise<void>
+  };
 }
