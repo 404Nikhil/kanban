@@ -1,12 +1,14 @@
 import React from 'react';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { Task, TaskStatus } from '@/types';
-import { useTasks } from '@/hooks/useTasks';
 import Column from './Column';
 
-const KanbanBoard: React.FC = () => {
-  const { tasks, updateTaskStatus } = useTasks();
+interface KanbanBoardProps {
+  tasks: Task[];
+  onUpdateTaskStatus: (id: string, newStatus: TaskStatus) => void;
+}
 
+const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, onUpdateTaskStatus }) => {
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
 
@@ -22,7 +24,7 @@ const KanbanBoard: React.FC = () => {
     }
 
     const newStatus = destination.droppableId as TaskStatus;
-    updateTaskStatus(draggableId, newStatus);
+    onUpdateTaskStatus(draggableId, newStatus);
   };
 
   const columns: TaskStatus[] = ['To Do', 'In Progress', 'Completed'];
