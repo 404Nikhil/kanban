@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Task, TaskStatus } from '@/types';
-import { fetchTasks, createTask, updateTask, deleteTask } from '@/lib/api';
+import { fetchTasks, createTask, updateTask as apiUpdateTask, deleteTask } from '@/lib/api';
 
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -35,13 +35,17 @@ export function useTasks() {
     }
   }
 
-  async function updateTaskStatus(id: string, newStatus: TaskStatus) {
+  async function updateTask(id: string, updates: Partial<Task>) {
     try {
-      const updatedTask = await updateTask(id, { status: newStatus });
+      const updatedTask = await apiUpdateTask(id, updates);
       setTasks(tasks.map(task => task.id === id ? updatedTask : task));
     } catch (err) {
       setError('Failed to update task');
     }
+  }
+
+  async function updateTaskStatus(id: string, newStatus: TaskStatus) {
+    updateTask(id, { status: newStatus });
   }
 
   async function removeTask(id: string) {
@@ -53,12 +57,5 @@ export function useTasks() {
     }
   }
 
-  return {
-    tasks,
-    loading,
-    error,
-    addTask: (task: Omit<Task, 'id'>) => Promise<void>,
-    updateTaskStatus: (id: string, newStatus: TaskStatus) => Promise<void>,
-    removeTask: (id: string) => Promise<void>
-  };
+  return { tasks, loading, error, addTask, updateTask, updateTaskStatus, removeTask };
 }
