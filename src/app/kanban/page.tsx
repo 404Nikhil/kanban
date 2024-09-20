@@ -1,4 +1,4 @@
-import KanbanBoard from '@/components/KanbanBoard/KanbanBoard';
+import KanbanBoard from '@/components/ClientKanbanBoard';
 
 export default function Kanban() {
   return (

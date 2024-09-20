@@ -1,7 +1,8 @@
+'use client'
+
 import React from 'react';
-import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { Task, TaskStatus } from '@/types';
-import Column from './Column';
 
 interface KanbanBoardProps {
   tasks: Task[];
@@ -9,6 +10,8 @@ interface KanbanBoardProps {
 }
 
 const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, onUpdateTaskStatus }) => {
+  const columns: TaskStatus[] = ['To Do', 'In Progress', 'Completed'];
+
   const onDragEnd = (result: DropResult) => {
     const { destination, source, draggableId } = result;
 
@@ -27,17 +30,41 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({ tasks, onUpdateTaskStatus }) 
     onUpdateTaskStatus(draggableId, newStatus);
   };
 
-  const columns: TaskStatus[] = ['To Do', 'In Progress', 'Completed'];
-
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="flex space-x-4">
         {columns.map((column) => (
-          <Column
-            key={column}
-            title={column}
-            tasks={tasks.filter((task) => task.status === column)}
-          />
+          <div key={column} className="w-1/3">
+            <h3 className="font-bold mb-2">{column}</h3>
+            <Droppable droppableId={column}>
+              {(provided) => (
+                <div
+                  {...provided.droppableProps}
+                  ref={provided.innerRef}
+                  className="bg-gray-100 p-2 rounded min-h-[200px]"
+                >
+                  {tasks
+                    .filter((task) => task.status === column)
+                    .map((task, index) => (
+                      <Draggable key={task.id} draggableId={task.id} index={index}>
+                        {(provided) => (
+                          <div
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            className="bg-white p-2 mb-2 rounded shadow"
+                          >
+                            <h4 className="font-semibold">{task.title}</h4>
+                            <p className="text-sm">{task.description}</p>
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </div>
         ))}
       </div>
     </DragDropContext>

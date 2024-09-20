@@ -1,4 +1,4 @@
-import TaskList from '@/components/TaskList/TaskList';
+import TaskList from '@/components/ClientTaskList';
 
 export default function Dashboard() {
   return (
